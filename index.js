@@ -94,7 +94,7 @@ app.get('/execute', (req, res) => {
 
     const dayOfWeek = koreanTime.getDay(); // 0: 일요일, 1: 월요일, ..., 6: 토요일
 
-    if (dayOfWeek === 1) { // 월요일일 때
+    if (dayOfWeek === 0) { // d일요일일 때 월임ㄴ 1로 바꿔야댐
         console.log("매주 월요일 자정 실행 중...");
         const weeksPassed = calculateWeeksPassed();
         const dateRange = getWeekDateRange(weeksPassed);
