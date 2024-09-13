@@ -84,9 +84,10 @@ function getWeekDateRange(weekNumber) {
 // 디스코드 클라이언트가 준비되었을 때
 client.once('ready', () => {
     console.log(`Logged in as ${client.user.tag}!`);
+});
 
-    // 스케줄링 작업: 매주 월요일 00:00에 실행
-    const job = schedule.scheduleJob('0 0 * * 1', () => {
+// 매주 월요일 자정에 작업을 수행하는 엔드포인트
+app.get('/execute', (req, res) => {
         console.log("매주 월요일 자정 실행 중...");
         const weeksPassed = calculateWeeksPassed();
         const dateRange = getWeekDateRange(weeksPassed);
@@ -102,8 +103,8 @@ client.once('ready', () => {
         } else {
             console.log("메시지를 보낼 채널을 찾지 못함.");
         }
-    });
 });
+
 
 // 서버 시작
 app.listen(port, () => {
