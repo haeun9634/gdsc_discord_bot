@@ -1,8 +1,8 @@
-import dotenv from 'dotenv';
 import { Client, GatewayIntentBits } from 'discord.js';
 import schedule from 'node-schedule';
 import express from 'express';
 import axios from 'axios';
+import dotenv from 'dotenv';
 
 dotenv.config();
 
@@ -43,8 +43,28 @@ app.get('/callback', async (req, res) => {
     }
 });
 
-// 시작 날짜 설정 (8월 19일)
-const startDate = new Date('2024-08-19');
+// 시작 날짜 설정 (9월 16일)
+const startDate = new Date('2024-09-16');
+
+// 명언 배열
+const quotes = [
+    "성공은 열심히 하는 사람의 것이다. - 알버트 아인슈타인",
+    "포기하지 마세요. 지금 고난이 오히려 당신을 더 강하게 할 것입니다. - 빌 게이츠",
+    "실패는 성공으로 가는 첫 걸음입니다. - 헨리 포드",
+    "오늘의 노력이 내일의 성공을 만듭니다. - 벤자민 프랭클린",
+    "성공하려면 실패를 두려워하지 마세요. - 스티브 잡스",
+    "성공의 비밀은 목표를 설정하는 것입니다. - 나폴레온 힐",
+    "매일 조금씩 나아가면 결국 도달합니다. - 브루스 리",
+    "성공은 계속하는 사람의 것이다. - 윈스턴 처칠",
+    "자신을 믿으세요. 그 믿음이 힘이 됩니다. - 오프라 윈프리",
+    "실패는 끝이 아니라 새로운 시작입니다. - 존 록펠러"
+];
+
+// 현재 주차에 맞는 명언을 선택하는 함수
+function getWeeklyQuote(weekNumber) {
+    const quoteIndex = (weekNumber - 1) % quotes.length; // 10개의 명언 순환
+    return quotes[quoteIndex];
+}
 
 // 주차 계산 함수
 function calculateWeeksPassed() {
@@ -61,42 +81,37 @@ function getWeekDateRange(weekNumber) {
     const start = weekStartDate.toLocaleDateString('ko-KR', options);
     const end = weekEndDate.toLocaleDateString('ko-KR', options);
 
-    return ${start}부터 ${end}까지;
+    return `${start}부터 ${end}까지`;
 }
 
 // 디스코드 클라이언트가 준비되었을 때
 client.once('ready', () => {
-    console.log(Logged in as ${client.user.tag}!);
+    console.log(`Logged in as ${client.user.tag}!`);
 
     // 스케줄링 작업: 매주 월요일 00:00에 실행
     const job = schedule.scheduleJob('0 0 * * 1', () => {
+        console.log("매주 월요일 자정 실행 중...");
         const weeksPassed = calculateWeeksPassed();
         const dateRange = getWeekDateRange(weeksPassed);
+        const weeklyQuote = getWeeklyQuote(weeksPassed); // 주차별 명언 가져오기
 
         const guild = client.guilds.cache.get(process.env.GUILD_ID);
         const channel = guild.channels.cache.get(process.env.CHANNEL_ID);
 
         if (channel) {
-            channel.send(이번 주는 스터디 ${weeksPassed}주차 입니다. (${dateRange}) 계속해서 열심히 해봅시다! 💪);
+            console.log("메시지를 보낼 채널 발견!");
+            
+            channel.send(`이번 주는 스터디 ${weeksPassed}주차 입니다! (${dateRange}) 🚀\n"${weeklyQuote}" \n이번 주도 열심히 달려봅시다! 🔥`);
+        }
+        else {
+            console.log("메시지를 보낼 채널을 찾지 못함.");
         }
     });
 });
 
-// 메시지 이벤트 처리
-client.on('messageCreate', message => {
-    if (!message.author.bot) {
-        // "스터디"라는 단어가 포함된 메시지를 감지
-        if (message.content.toLowerCase().includes('스터디')) {
-            const weeksPassed = calculateWeeksPassed();
-            const dateRange = getWeekDateRange(weeksPassed);
-            message.channel.send(오늘은 스터디 ${weeksPassed}주차 입니다. (${dateRange}) 열심히 해봅시다!);
-        }
-    }
-});
-
 // 서버 시작
 app.listen(port, () => {
-    console.log(Server is running on http://localhost:${port});
+    console.log(`Server is running on http://localhost:${port}`);
 });
 
 // 봇 로그인
