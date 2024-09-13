@@ -9,7 +9,7 @@ dotenv.config();
 const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent] });
 
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 3000; // Heroku의 포트 환경 변수 사용
 
 // OAuth2 인증 콜백 처리
 app.get('/callback', async (req, res) => {
@@ -25,7 +25,7 @@ app.get('/callback', async (req, res) => {
             client_secret: process.env.CLIENT_SECRET,
             grant_type: 'authorization_code',
             code: code,
-            redirect_uri: 'http://localhost:3000/callback',
+            redirect_uri: `${process.env.BASE_URL}/callback`,
         }), {
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
@@ -34,9 +34,6 @@ app.get('/callback', async (req, res) => {
 
         const { access_token } = response.data;
         res.send('Authentication successful! You can close this window.');
-        
-        // 이제 access_token을 사용하여 디스코드 API와 상호작용할 수 있습니다.
-
     } catch (error) {
         console.error('Error during authentication:', error);
         res.send('Authentication failed.');
@@ -102,8 +99,7 @@ client.once('ready', () => {
             console.log("메시지를 보낼 채널 발견!");
             
             channel.send(`이번 주는 스터디 ${weeksPassed}주차 입니다! (${dateRange}) 🚀\n"${weeklyQuote}" \n이번 주도 열심히 달려봅시다! 🔥`);
-        }
-        else {
+        } else {
             console.log("메시지를 보낼 채널을 찾지 못함.");
         }
     });
