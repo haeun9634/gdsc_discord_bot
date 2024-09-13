@@ -88,6 +88,13 @@ client.once('ready', () => {
 
 // 매주 월요일 자정에 작업을 수행하는 엔드포인트
 app.get('/execute', (req, res) => {
+    const now = new Date();
+    const koreanTimeOffset = 9 * 60 * 60 * 1000; // 한국은 UTC+9
+    const koreanTime = new Date(now.getTime() + koreanTimeOffset);
+
+    const dayOfWeek = koreanTime.getDay(); // 0: 일요일, 1: 월요일, ..., 6: 토요일
+
+    if (dayOfWeek === 1) { // 월요일일 때
         console.log("매주 월요일 자정 실행 중...");
         const weeksPassed = calculateWeeksPassed();
         const dateRange = getWeekDateRange(weeksPassed);
@@ -103,6 +110,7 @@ app.get('/execute', (req, res) => {
         } else {
             console.log("메시지를 보낼 채널을 찾지 못함.");
         }
+    }
 });
 
 
