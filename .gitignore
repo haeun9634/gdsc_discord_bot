@@ -2,8 +2,7 @@
 node_modules/
 
 # Dependency directories
-package.json
-package-lock.json
+
 
 # Other ignores...
 .DS_Store
