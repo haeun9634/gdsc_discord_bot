@@ -59,6 +59,10 @@ const quotes = [
 
 // 현재 주차에 맞는 명언을 선택하는 함수
 function getWeeklyQuote(weekNumber) {
+     // 주차가 0보다 작으면 첫 번째 명언 반환
+     if (weekNumber <= 0) {
+        return quotes[0]; // 주차가 0일 때 첫 번째 명언 반환
+    }
     const quoteIndex = (weekNumber - 1) % quotes.length; // 10개의 명언 순환
     return quotes[quoteIndex];
 }
